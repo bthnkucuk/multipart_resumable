@@ -1,7 +1,7 @@
 # multipart_resumable
 
 [![CI](https://github.com/bthnkucuk/multipart_resumable/actions/workflows/ci.yml/badge.svg)](https://github.com/bthnkucuk/multipart_resumable/actions/workflows/ci.yml)
-![coverage](https://img.shields.io/badge/coverage-0%25-red)
+![coverage](https://img.shields.io/badge/coverage-99.5%25-brightgreen)
 
 Resumable multipart upload client for Dart. Pause, resume, cancel, retry — with on-disk session persistence so an interrupted upload can be resumed across process restarts.
 
