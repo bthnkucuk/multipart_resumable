@@ -263,6 +263,16 @@ class ResumableUploadClient {
               controller.complete();
             } catch (e, st) {
               final failure = _handleCommonErrors(e) ?? const UnknownUploadException();
+              try {
+                await _store.removeByPath(session.path);
+              } catch (re, rst) {
+                developer.log(
+                  'removeByPath failed after complete() error',
+                  name: 'multipart_resumable',
+                  error: re,
+                  stackTrace: rst,
+                );
+              }
               controller.completeError(e, failure, st);
             }
           },
@@ -326,6 +336,7 @@ class ResumableUploadClient {
           final url = await _repo.presignPartUrl(id: session.id, partNumber: partNumber);
 
           var attempt = 0;
+          final absoluteSentAtPartStart = absoluteSent;
           while (true) {
             try {
               var lastReported = 0;
@@ -360,6 +371,9 @@ class ResumableUploadClient {
                 controller.completeError(e, const UnknownUploadException());
                 return;
               }
+              // Rewind progress so partial bytes from the failed attempt are
+              // not double-counted when the retry re-reports them.
+              absoluteSent = absoluteSentAtPartStart;
               final delay = retryPolicy.delayForAttempt(attempt);
               await Future<void>.delayed(delay);
               attempt++;

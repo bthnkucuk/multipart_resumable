@@ -3,9 +3,6 @@ sealed class UploadException implements Exception {
 
   final String? message;
   final String? code;
-
-  @override
-  String toString() => message ?? code ?? runtimeType.toString();
 }
 
 final class UnknownUploadException extends UploadException {

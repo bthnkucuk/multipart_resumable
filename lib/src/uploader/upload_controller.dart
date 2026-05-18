@@ -42,6 +42,17 @@ class UploadController {
 
   UploadException? _failure;
 
+  Object? _originalError;
+  StackTrace? _originalStackTrace;
+
+  /// The underlying error passed to [completeError], if any. Cleared on a
+  /// successful [complete].
+  Object? get originalError => _originalError;
+
+  /// The stack trace passed to [completeError], if any. Cleared on a
+  /// successful [complete].
+  StackTrace? get originalStackTrace => _originalStackTrace;
+
   String? _key;
   String? _id;
   String? get key => _key;
@@ -101,6 +112,8 @@ class UploadController {
   void complete() {
     if (!_done.isCompleted) {
       _completedSuccessfully = true;
+      _originalError = null;
+      _originalStackTrace = null;
       _done.complete();
     }
   }
@@ -109,12 +122,20 @@ class UploadController {
     if (_done.isCompleted) return;
     _completedSuccessfully = false;
     _failure = failure;
+    _originalError = error;
+    _originalStackTrace = st;
     // Never throw: complete the future normally so callers of `done` receive Left(failure).
     _done.complete();
   }
 
   void dispose() {
     if (_isDisposed) return;
+    // Cancel any in-flight work BEFORE closing the cancel controller, so the
+    // uploader's onCancelStream subscription still receives the event.
+    if (!_cancelRequested) {
+      _cancelRequested = true;
+      _cancelController.add(null);
+    }
     _isDisposed = true;
     if (!_done.isCompleted) {
       _completedSuccessfully = false;
