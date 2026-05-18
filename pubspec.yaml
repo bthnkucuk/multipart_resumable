@@ -1,0 +1,20 @@
+name: multipart_resumable
+version: 0.3.0
+homepage: https://github.com/bthnkucuk/multipart_resumable
+
+environment:
+  sdk: ">=3.11.0 <4.0.0"
+description: Resumable multipart upload client with pause/resume, retries, and progress.
+
+dependencies:
+  crypto: ^3.0.7
+  dio: ^5.9.2
+  fpdart: ^1.2.0
+  meta: ^1.16.0
+  path: ^1.9.1
+
+dev_dependencies:
+  lints: ^6.1.0
+  mocktail: ^1.0.5
+  test: ^1.31.1
+
